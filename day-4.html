@@ -1,0 +1,138 @@
+ <!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Fruit Click Game</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    background:linear-gradient(to right,#87CEEB,#98FB98);
+    overflow:hidden;
+    text-align:center;
+}
+
+h1{
+    margin-top:20px;
+    color:#222;
+}
+
+#score{
+    font-size:28px;
+    margin-top:10px;
+    color:green;
+    font-weight:bold;
+}
+
+#timer{
+    font-size:28px;
+    margin-top:10px;
+    color:red;
+    font-weight:bold;
+}
+
+#gameArea{
+    width:100vw;
+    height:80vh;
+    position:relative;
+}
+
+#fruit{
+    position:absolute;
+    font-size:70px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+#fruit:hover{
+    transform:scale(1.2);
+}
+
+#gameOver{
+    display:none;
+    font-size:35px;
+    color:blue;
+    margin-top:20px;
+    font-weight:bold;
+}
+</style>
+
+</head>
+<body>
+
+<h1>🍎 Fruit Click Game 🍌</h1>
+
+<div id="score">Score : 0</div>
+<div id="timer">Time : 45</div>
+
+<div id="gameArea">
+    <div id="fruit">🍎</div>
+</div>
+
+<div id="gameOver"></div>
+
+<script>
+
+let score = 0;
+let timeLeft = 45;
+
+const fruit = document.getElementById("fruit");
+const gameArea = document.getElementById("gameArea");
+const scoreText = document.getElementById("score");
+const timerText = document.getElementById("timer");
+const gameOver = document.getElementById("gameOver");
+
+function moveFruit(){
+
+    const fruits = ["🍎","🍌"];
+
+    fruit.innerHTML = fruits[Math.floor(Math.random()*2)];
+
+    let x = Math.random()*(window.innerWidth-100);
+    let y = Math.random()*(window.innerHeight-220);
+
+    fruit.style.left = x+"px";
+    fruit.style.top = y+"px";
+}
+
+moveFruit();
+
+fruit.onclick = function(){
+
+    if(timeLeft<=0) return;
+
+    score++;
+    scoreText.innerHTML = "Score : " + score;
+
+    moveFruit();
+};
+
+let timer = setInterval(function(){
+
+    timeLeft--;
+
+    timerText.innerHTML = "Time : " + timeLeft;
+
+    if(timeLeft<=0){
+
+        clearInterval(timer);
+
+        fruit.style.display="none";
+
+        gameOver.style.display="block";
+        gameOver.innerHTML="🎉 Game Over!<br>Your Score : "+score;
+
+    }
+
+},1000);
+
+</script>
+
+</body>
+</html>
