@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APEX '26 — It's Our Event</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;900&family=Jost:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --navy:#080B14;
+    --navy-2:#10162A;
+    --navy-3:#161D36;
+    --amber:#FFB627;
+    --ember:#FF6B35;
+    --cyan:#4CC9F0;
+    --ivory:#F4F0E6;
+    --muted:#8791AC;
+    --line: rgba(244,240,230,0.12);
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    font-family:'Jost',sans-serif;
+    background:var(--navy);
+    color:var(--ivory);
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--amber);color:var(--navy);}
+
+  h1,h2,h3,.display{font-family:'Cinzel',serif;letter-spacing:.02em;}
+  .mono{font-family:'JetBrains Mono',monospace;}
+
+  /* ---------- SCROLL CONTAINER ---------- */
+  .scroller{
+    height:100vh;
+    overflow-y:scroll;
+    scroll-snap-type:y mandatory;
+  }
+  section{
+    min-height:100vh;
+    scroll-snap-align:start;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    padding:6vh 6vw;
+    overflow:hidden;
+  }
+
+  /* ---------- SIDE NAV ---------- */
+  .sidenav{
+    position:fixed;
+    right:28px;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:200;
+    display:flex;
+    flex-direction:column;
+    gap:22px;
+  }
+  .sidenav a{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    text-decoration:none;
+    color:var(--muted);
+    font-family:'JetBrains Mono',monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+  }
+  .sidenav .dot{
+    width:9px;height:9px;border-radius:50%;
+    border:1px solid var(--muted);
+    transition:all .35s ease;
+  }
+  .sidenav a.active .dot{
+    background:var(--amber);
+    border-color:var(--amber);
+    box-shadow:0 0 10px var(--amber);
+  }
+  .sidenav a.active{color:var(--amber);}
+  .sidenav .roman{opacity:0;width:0;overflow:hidden;transition:all .3s ease;}
+  .sidenav a.active .roman{opacity:1;width:auto;}
+  @media (max-width:720px){ .sidenav{display:none;} }
+
+  /* ---------- CORNER LOGO ---------- */
+  .corner-logo{
+    position:fixed;
+    top:24px;left:28px;
+    z-index:200;
+    display:flex;
+    align-items:center;
+    gap:10px;
+    cursor:pointer;
+  }
+  .corner-logo svg{width:34px;height:34px;}
+  .corner-logo span{
+    font-family:'Cinzel',serif;
+    font-size:13px;
+    letter-spacing:.25em;
+    color:var(--ivory);
+  }
+
+  /* ---------- EAGLE EMBLEM ---------- */
+  .eagle-draw path, .eagle-draw polygon{
+    stroke:var(--amber);
+    stroke-width:1.4;
+    fill:transparent;
+    stroke-dasharray:900;
+    stroke-dashoffset:900;
+    animation:draw 3.2s ease forwards;
+  }
+  .eagle-draw .fillwing{
+    animation:draw 3.2s ease forwards, fillin 1.5s ease 2.6s forwards;
+  }
+  @keyframes draw{ to{stroke-dashoffset:0;} }
+  @keyframes fillin{ to{fill:rgba(255,182,39,0.14);} }
+
+  /* ================= PAGE 1 — HERO ================= */
+  #hero{
+    background:
+      radial-gradient(ellipse at 50% 20%, rgba(255,182,39,0.10), transparent 55%),
+      radial-gradient(ellipse at 80% 80%, rgba(76,201,240,0.08), transparent 50%),
+      var(--navy);
+  }
+  .stars{position:absolute;inset:0;z-index:0;}
+  .star{
+    position:absolute;
+    width:2px;height:2px;
+    background:var(--ivory);
+    border-radius:50%;
+    opacity:.6;
+    animation:twinkle 3s infinite ease-in-out;
+  }
+  @keyframes twinkle{0%,100%{opacity:.15;}50%{opacity:.9;}}
+
+  .hero-inner{
+    position:relative;z-index:2;
+    text-align:center;
+    display:flex;flex-direction:column;align-items:center;gap:22px;
+  }
+  .hero-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;
+    letter-spacing:.35em;
+    color:var(--cyan);
+    text-transform:uppercase;
+    opacity:0;
+    animation:riseIn .9s ease .3s forwards;
+  }
+  .hero-title{
+    font-size:clamp(48px,10vw,140px);
+    font-weight:900;
+    line-height:.95;
+    background:linear-gradient(180deg,#FFFDF7 0%, var(--amber) 60%, var(--ember) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    opacity:0;
+    animation:riseIn 1.1s ease .5s forwards;
+    text-transform:uppercase;
+  }
+  .hero-sub{
+    max-width:560px;
+    color:var(--muted);
+    font-size:17px;
+    font-weight:300;
+    opacity:0;
+    animation:riseIn 1s ease .8s forwards;
+  }
+  .hero-date{
+    margin-top:8px;
+    font-family:'JetBrains Mono',monospace;
+    font-size:15px;
+    letter-spacing:.3em;
+    color:var(--ivory);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    padding:14px 26px;
+    opacity:0;
+    animation:riseIn 1s ease 1.1s forwards;
+  }
+  .hero-date b{color:var(--amber);}
+  @keyframes riseIn{from{opacity:0;transform:translateY(26px);}to{opacity:1;transform:translateY(0);}}
+
+  .hero-eagle{
+    position:absolute;
+    width:min(70vw,620px);
+    opacity:.5;
+    z-index:1;
+    animation:soar 14s linear infinite;
+  }
+  @keyframes soar{
+    0%{transform:translate(-40vw,10vh) scale(.7) rotate(-2deg);}
+    50%{transform:translate(10vw,-4vh) scale(1) rotate(1deg);}
+    100%{transform:translate(-40vw,10vh) scale(.7) rotate(-2deg);}
+  }
+  .scroll-cue{
+    position:absolute;bottom:34px;left:50%;transform:translateX(-50%);
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    color:var(--muted);
+    font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;
+    z-index:2;
+  }
+  .scroll-cue .bar{width:1px;height:34px;background:linear-gradient(var(--amber),transparent);animation:cue 1.6s ease infinite;}
+  @keyframes cue{0%{opacity:0;}50%{opacity:1;}100%{opacity:0;}}
+
+  /* ================= PAGE 2 — COUNTDOWN & INVITE ================= */
+  #countdown{
+    background:linear-gradient(180deg,var(--navy) 0%, var(--navy-2) 100%);
+  }
+  .ch-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.35em;color:var(--cyan);
+    margin-bottom:14px;text-transform:uppercase;
+  }
+  .ch-title{font-size:clamp(30px,5vw,56px);margin-bottom:40px;text-align:center;}
+  .ch-title span{color:var(--amber);}
+
+  .flip-row{
+    display:flex;gap:18px;margin-bottom:46px;flex-wrap:wrap;justify-content:center;
+  }
+  .flip{
+    width:110px;height:130px;
+    background:var(--navy-3);
+    border:1px solid var(--line);
+    border-radius:6px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;
+    box-shadow:0 20px 50px rgba(0,0,0,.4), inset 0 0 0 1px rgba(255,182,39,.06);
+  }
+  .flip::after{
+    content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:rgba(0,0,0,.5);
+  }
+  .flip .num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:52px;font-weight:700;color:var(--ivory);
+    animation:pulseNum 1s ease;
+  }
+  @keyframes pulseNum{from{opacity:.3;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+  .flip .lbl{
+    margin-top:8px;font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.2em;color:var(--muted);text-transform:uppercase;
+  }
+
+  .invite-card{
+    max-width:640px;text-align:center;
+    padding:38px 42px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:rgba(255,182,39,0.03);
+    backdrop-filter:blur(6px);
+    position:relative;
+  }
+  .invite-card::before{
+    content:'';position:absolute;inset:8px;border:1px solid rgba(255,182,39,.18);border-radius:2px;pointer-events:none;
+  }
+  .invite-card p{color:var(--muted);line-height:1.85;font-weight:300;font-size:15.5px;}
+  .invite-card strong{color:var(--ivory);font-weight:500;}
+  .cta{
+    display:inline-block;margin-top:26px;
+    padding:14px 36px;
+    background:linear-gradient(90deg,var(--amber),var(--ember));
+    color:var(--navy);
+    font-family:'JetBrains Mono',monospace;
+    font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    text-decoration:none;border-radius:2px;font-weight:700;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+  .cta:hover{transform:translateY(-3px);box-shadow:0 12px 30px rgba(255,107,53,.35);}
+
+  /* ================= PAGE 3 — CELEBRITY REVEAL ================= */
+  #celebs{background:var(--navy-2);}
+  .celeb-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:26px;
+    max-width:1100px;
+    width:100%;
+    margin-top:36px;
+  }
+  .celeb-card{
+    perspective:1200px;
+    height:340px;
+  }
+  .celeb-inner{
+    position:relative;width:100%;height:100%;
+    transform-style:preserve-3d;
+    transition:transform .7s cubic-bezier(.4,.2,.2,1);
+  }
+  .celeb-card:hover .celeb-inner{transform:rotateY(180deg);}
+  .celeb-face{
+    position:absolute;inset:0;backface-visibility:hidden;
+    border:1px solid var(--line);border-radius:6px;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    padding:22px;
+    background:
+      linear-gradient(180deg, rgba(8,11,20,0) 30%, rgba(8,11,20,.95) 100%),
+      var(--gradA);
+  }
+  .celeb-face h3{font-size:22px;color:var(--ivory);}
+  .celeb-face .genre{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--amber);margin-top:6px;text-transform:uppercase;}
+  .celeb-back{
+    position:absolute;inset:0;backface-visibility:hidden;
+    transform:rotateY(180deg);
+    background:var(--navy-3);
+    border:1px solid var(--amber);border-radius:6px;
+    padding:22px;
+    display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;
+  }
+  .celeb-back h4{font-size:16px;color:var(--amber);}
+  .celeb-back p{font-size:13px;color:var(--muted);line-height:1.6;font-weight:300;}
+  .clip-box{
+    margin-top:auto;
+    border:1px dashed rgba(255,182,39,.4);
+    border-radius:4px;
+    padding:10px;
+    display:flex;align-items:center;gap:10px;
+    font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--cyan);
+    cursor:pointer;
+  }
+  .clip-box .play{
+    width:22px;height:22px;border-radius:50%;
+    background:var(--amber);color:var(--navy);
+    display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;
+  }
+
+  /* ================= PAGE 4 — YOU'RE INVITED ================= */
+  #invite4{
+    background:linear-gradient(180deg,var(--navy-2) 0%, var(--navy) 100%);
+    text-align:center;
+  }
+  .invite4-eagle{width:120px;margin-bottom:18px;opacity:.9;}
+  .invite4-title{font-size:clamp(34px,6vw,68px);margin-bottom:18px;}
+  .invite4-title em{font-style:normal;color:var(--amber);}
+  .invite4-copy{max-width:560px;color:var(--muted);font-weight:300;line-height:1.9;font-size:16px;margin-bottom:30px;}
+  .details-strip{
+    display:flex;gap:0;flex-wrap:wrap;justify-content:center;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:22px 0;width:100%;max-width:640px;
+  }
+  .details-strip div{
+    flex:1;min-width:160px;
+    padding:0 20px;
+    border-right:1px solid var(--line);
+  }
+  .details-strip div:last-child{border-right:none;}
+  .details-strip .k{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:6px;}
+  .details-strip .v{font-family:'Cinzel',serif;font-size:16px;color:var(--ivory);}
+
+  /* ================= PAGE 5 — REGISTRATION ================= */
+  #register{background:var(--navy-2);}
+  .reg-wrap{
+    display:flex;gap:60px;align-items:center;max-width:1000px;width:100%;flex-wrap:wrap;justify-content:center;
+  }
+  .reg-seal{
+    flex:0 0 200px;
+    display:flex;flex-direction:column;align-items:center;gap:14px;
+    text-align:center;
+  }
+  .reg-seal svg{width:150px;height:150px;}
+  .reg-seal .tag{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.3em;color:var(--muted);text-transform:uppercase;}
+  form{
+    flex:1;min-width:300px;max-width:460px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+  form h2{font-size:26px;margin-bottom:4px;}
+  form .hint{color:var(--muted);font-size:13px;font-weight:300;margin-bottom:12px;}
+  .field{display:flex;flex-direction:column;gap:6px;}
+  .field label{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.15em;color:var(--cyan);text-transform:uppercase;}
+  .field input, .field select{
+    background:transparent;
+    border:none;
+    border-bottom:1px solid var(--line);
+    color:var(--ivory);
+    font-family:'Jost',sans-serif;
+    font-size:15px;
+    padding:8px 2px;
+    outline:none;
+    transition:border-color .25s ease;
+  }
+  .field input:focus, .field select:focus{border-color:var(--amber);}
+  .field select option{background:var(--navy-2);}
+  .checks{display:flex;gap:16px;flex-wrap:wrap;}
+  .checks label{
+    display:flex;align-items:center;gap:6px;
+    font-size:13px;color:var(--muted);font-weight:300;
+  }
+  .submit-btn{
+    margin-top:10px;
+    padding:14px;
+    background:linear-gradient(90deg,var(--amber),var(--ember));
+    border:none;color:var(--navy);
+    font-family:'JetBrains Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+    font-weight:700;border-radius:2px;cursor:pointer;
+    transition:transform .25s ease;
+  }
+  .submit-btn:hover{transform:translateY(-2px);}
+  .success-msg{
+    display:none;
+    text-align:center;
+    flex-direction:column;align-items:center;gap:14px;
+  }
+  .success-msg.show{display:flex;}
+  .success-msg svg{width:90px;height:90px;}
+  .success-msg h3{font-size:22px;color:var(--amber);}
+  .success-msg p{color:var(--muted);font-size:14px;max-width:340px;}
+
+  footer{
+    position:absolute;bottom:18px;
+    font-family:'JetBrains Mono',monospace;font-size:10px;
+    letter-spacing:.2em;color:var(--muted);opacity:.6;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important;transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="corner-logo" onclick="document.querySelector('.scroller').scrollTo({top:0,behavior:'smooth'})">
+  <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M50 12 L60 34 L88 30 L64 48 L78 74 L50 58 L22 74 L36 48 L12 30 L40 34 Z" stroke="#FFB627" stroke-width="2" fill="rgba(255,182,39,0.12)"/>
+  </svg>
+  <span>APEX '26</span>
+</div>
+
+<nav class="sidenav" id="sidenav">
+  <a href="#hero" class="active"><span class="dot"></span><span class="roman">I · EVENT</span></a>
+  <a href="#countdown"><span class="dot"></span><span class="roman">II · COUNTDOWN</span></a>
+  <a href="#celebs"><span class="dot"></span><span class="roman">III · REVEAL</span></a>
+  <a href="#invite4"><span class="dot"></span><span class="roman">IV · INVITE</span></a>
+  <a href="#register"><span class="dot"></span><span class="roman">V · REGISTER</span></a>
+</nav>
+
+<div class="scroller" id="scroller">
+
+  <!-- ============ PAGE 1 : HERO ============ -->
+  <section id="hero">
+    <div class="stars" id="stars"></div>
+
+    <svg class="hero-eagle" viewBox="0 0 400 240" xmlns="http://www.w3.org/2000/svg">
+      <path d="M200 40 C160 20, 90 30, 20 90 C90 80, 150 90, 190 120 C150 100, 90 110, 30 150 C100 140, 170 150, 200 190 C230 150, 300 140, 370 150 C310 110, 250 100, 210 120 C250 90, 310 80, 380 90 C310 30, 240 20, 200 40 Z" fill="rgba(255,182,39,0.06)" stroke="rgba(255,182,39,0.35)" stroke-width="1"/>
+    </svg>
+
+    <div class="hero-inner">
+      <div class="hero-eyebrow">College Cultural &amp; Tech Fest</div>
+      <h1 class="hero-title">It's Our<br>Event</h1>
+      <p class="hero-sub">One night, one campus, one unforgettable flight into music, lights and everything we built together.</p>
+      <div class="hero-date mono">05 <span>·</span> 07 <span>·</span> <b>2026</b></div>
+    </div>
+
+    <div class="scroll-cue"><span>SCROLL</span><span class="bar"></span></div>
+  </section>
+
+  <!-- ============ PAGE 2 : COUNTDOWN + INVITE ============ -->
+  <section id="countdown">
+    <div class="ch-label">Chapter II</div>
+    <h2 class="ch-title">The wait ends in <span id="countdown-headline">—</span></h2>
+
+    <div class="flip-row" id="flip-row">
+      <div class="flip"><span class="num" id="d-days">00</span><span class="lbl">Days</span></div>
+      <div class="flip"><span class="num" id="d-hours">00</span><span class="lbl">Hours</span></div>
+      <div class="flip"><span class="num" id="d-mins">00</span><span class="lbl">Mins</span></div>
+      <div class="flip"><span class="num" id="d-secs">00</span><span class="lbl">Secs</span></div>
+    </div>
+
+    <div class="invite-card">
+      <p>You've sat through the lectures, pulled the all-nighters, and made this campus loud with laughter. Now the college throws the doors open for one night to celebrate <strong>us</strong> — every club, every crew, every late-night idea that became something real.</p>
+      <p style="margin-top:14px;">Consider this your formal — and slightly overexcited — invitation.</p>
+      <a href="#celebs" class="cta">See who's coming →</a>
+    </div>
+  </section>
+
+  <!-- ============ PAGE 3 : CELEBRITY REVEAL ============ -->
+  <section id="celebs">
+    <div class="ch-label">Chapter III</div>
+    <h2 class="ch-title">The Line-Up</h2>
+
+    <div class="celeb-grid">
+
+      <div class="celeb-card">
+        <div class="celeb-inner">
+          <div class="celeb-face" style="--gradA:linear-gradient(160deg,#3a2b0f,#161D36);">
+            <h3>DJ Nova</h3>
+            <div class="genre">Electronic / Festival</div>
+          </div>
+          <div class="celeb-back">
+            <h4>DJ Nova</h4>
+            <p>Known for high-energy festival sets blending progressive house with live percussion. Headlined three major university circuits last season.</p>
+            <div class="clip-box"><span class="play">▶</span> Watch previous set — add your YouTube link here</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="celeb-card">
+        <div class="celeb-inner">
+          <div class="celeb-face" style="--gradA:linear-gradient(160deg,#2b1c1c,#161D36);">
+            <h3>The Velvet Collective</h3>
+            <div class="genre">Live Band / Indie-Pop</div>
+          </div>
+          <div class="celeb-back">
+            <h4>The Velvet Collective</h4>
+            <p>A five-piece live band famous for reworking campus-favorite anthems into cinematic indie arrangements. Their last tour sold out six college fests.</p>
+            <div class="clip-box"><span class="play">▶</span> Watch previous set — add your YouTube link here</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="celeb-card">
+        <div class="celeb-inner">
+          <div class="celeb-face" style="--gradA:linear-gradient(160deg,#122a2e,#161D36);">
+            <h3>MC Arjun</h3>
+            <div class="genre">Hip-Hop / Freestyle</div>
+          </div>
+          <div class="celeb-back">
+            <h4>MC Arjun</h4>
+            <p>Freestyle battle champion turned recording artist, bringing crowd cyphers and unreleased tracks straight to the campus stage.</p>
+            <div class="clip-box"><span class="play">▶</span> Watch previous set — add your YouTube link here</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p style="margin-top:26px;color:var(--muted);font-size:12px;font-family:'JetBrains Mono',monospace;letter-spacing:.1em;">HOVER / TAP EACH CARD FOR DETAILS</p>
+  </section>
+
+  <!-- ============ PAGE 4 : YOU'RE INVITED ============ -->
+  <section id="invite4">
+    <div class="ch-label">Chapter IV</div>
+    <svg class="invite4-eagle eagle-draw" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <path class="fillwing" d="M50 12 L60 34 L88 30 L64 48 L78 74 L50 58 L22 74 L36 48 L12 30 L40 34 Z"/>
+    </svg>
+    <h2 class="invite4-title">You are <em>officially</em><br>invited.</h2>
+    <p class="invite4-copy">Bring your friends, your energy, and your loudest cheer. This is the night the whole campus becomes one crowd, one stage, one story worth telling for years.</p>
+
+    <div class="details-strip">
+      <div><div class="k">Date</div><div class="v">5 July 2026</div></div>
+      <div><div class="k">Venue</div><div class="v">Main Campus Ground</div></div>
+      <div><div class="k">Gates Open</div><div class="v">5:00 PM</div></div>
+    </div>
+
+    <a href="#register" class="cta" style="margin-top:34px;">Reserve my spot →</a>
+  </section>
+
+  <!-- ============ PAGE 5 : REGISTRATION ============ -->
+  <section id="register">
+    <div class="reg-wrap">
+      <div class="reg-seal">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="46" fill="none" stroke="#8791AC" stroke-width="0.6" stroke-dasharray="2 3"/>
+          <path d="M50 20 L58 38 L80 35 L62 50 L72 72 L50 58 L28 72 L38 50 L20 35 L42 38 Z" fill="rgba(255,182,39,0.14)" stroke="#FFB627" stroke-width="1.5"/>
+        </svg>
+        <div class="tag">APEX '26 · Est. Campus</div>
+      </div>
+
+      <div style="flex:1;min-width:300px;max-width:460px;">
+        <form id="regForm">
+          <h2 class="ch-title" style="margin:0;text-align:left;">Reserve your spot</h2>
+          <p class="hint">Chapter V — takes less than a minute.</p>
+
+          <div class="field">
+            <label for="name">Full name</label>
+            <input type="text" id="name" required placeholder="Ananya Sharma">
+          </div>
+          <div class="field">
+            <label for="email">Email</label>
+            <input type="email" id="email" required placeholder="you@college.edu">
+          </div>
+          <div class="field">
+            <label for="phone">Phone</label>
+            <input type="tel" id="phone" required placeholder="+91 98765 43210">
+          </div>
+          <div class="field">
+            <label for="college">College / Department</label>
+            <input type="text" id="college" required placeholder="e.g. CSE, 3rd Year">
+          </div>
+          <div class="field">
+            <label for="year">Year of study</label>
+            <select id="year" required>
+              <option value="">Select year</option>
+              <option>1st Year</option>
+              <option>2nd Year</option>
+              <option>3rd Year</option>
+              <option>4th Year</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Interested in</label>
+            <div class="checks">
+              <label><input type="checkbox" name="interest" value="music"> Music Night</label>
+              <label><input type="checkbox" name="interest" value="tech"> Tech Fest</label>
+              <label><input type="checkbox" name="interest" value="games"> Gaming Zone</label>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn">Confirm registration</button>
+        </form>
+
+        <div class="success-msg" id="successMsg">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" fill="none" stroke="#FFB627" stroke-width="1"/>
+            <path d="M50 20 L58 38 L80 35 L62 50 L72 72 L50 58 L28 72 L38 50 L20 35 L42 38 Z" fill="rgba(255,182,39,0.18)" stroke="#FFB627" stroke-width="1.5"/>
+          </svg>
+          <h3>You're on the list.</h3>
+          <p id="successText">See you on 5 July 2026 — gates open 5:00 PM. Keep an eye on your inbox for your entry pass.</p>
+        </div>
+      </div>
+    </div>
+    <footer>APEX '26 · IT'S OUR EVENT · MAIN CAMPUS GROUND</footer>
+  </section>
+
+</div>
+
+<script>
+  // starfield
+  const starsEl = document.getElementById('stars');
+  for(let i=0;i<90;i++){
+    const s = document.createElement('div');
+    s.className='star';
+    s.style.left = Math.random()*100+'%';
+    s.style.top = Math.random()*100+'%';
+    s.style.animationDelay = (Math.random()*3)+'s';
+    s.style.width = s.style.height = (Math.random()*2+1)+'px';
+    starsEl.appendChild(s);
+  }
+
+  // side nav active state
+  const links = document.querySelectorAll('.sidenav a');
+  const sectionsEls = document.querySelectorAll('section');
+  const scroller = document.getElementById('scroller');
+  function updateNav(){
+    let idx = 0, closest = Infinity;
+    sectionsEls.forEach((sec,i)=>{
+      const d = Math.abs(sec.getBoundingClientRect().top);
+      if(d<closest){closest=d; idx=i;}
+    });
+    links.forEach(l=>l.classList.remove('active'));
+    links[idx].classList.add('active');
+  }
+  scroller.addEventListener('scroll', updateNav);
+  updateNav();
+
+  // countdown
+  const target = new Date('2026-07-05T17:00:00');
+  function tick(){
+    const now = new Date();
+    let diff = target - now;
+    if(diff<0) diff=0;
+    const d = Math.floor(diff/(1000*60*60*24));
+    const h = Math.floor((diff/(1000*60*60))%24);
+    const m = Math.floor((diff/(1000*60))%60);
+    const s = Math.floor((diff/1000)%60);
+    document.getElementById('d-days').textContent = String(d).padStart(2,'0');
+    document.getElementById('d-hours').textContent = String(h).padStart(2,'0');
+    document.getElementById('d-mins').textContent = String(m).padStart(2,'0');
+    document.getElementById('d-secs').textContent = String(s).padStart(2,'0');
+    document.getElementById('countdown-headline').textContent = d+' days';
+  }
+  tick();
+  setInterval(tick,1000);
+
+  // registration form
+  document.getElementById('regForm').addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim().split(' ')[0];
+    document.getElementById('successText').textContent =
+      `${name}, you're on the list. See you on 5 July 2026 — gates open 5:00 PM.`;
+    this.style.display='none';
+    document.getElementById('successMsg').classList.add('show');
+  });
+</script>
+
+</body>
+</html>
